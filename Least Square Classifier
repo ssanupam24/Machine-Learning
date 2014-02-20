@@ -1,0 +1,180 @@
+% Author Anupam
+% -----------------------------------Least Square Classifier------------------------
+
+f = dlmread('iris.txt');
+%For 10% CASE
+newtrain10 = zeros(15,5);
+newtest10 = zeros(135,5);
+randnos = zeros(15,1);
+ind1= 1;
+%Here the training data is fetched randomly
+while (ind1 <= 15)
+	x = int32(unifrnd(1,150));
+	if (any(x == randnos))
+		ind1 = ind1 - 1;
+	else
+		randnos(ind1) = x;
+		newtrain10(ind1,:) = f(x,:);
+		ind1 = ind1+1;
+	endif
+endwhile
+%Here the Test data is fetched excluding the training data
+ind1 = 1;
+for i = 1:150
+	if (any(int32(i) == randnos))
+		continue;
+	else
+		newtest10(ind1,:) = f(i,:);
+		ind1+=1;
+	endif
+endfor
+
+%For 30% CASE
+newtrain30 = zeros(45,5);
+newtest30 = zeros(105,5);
+randnos = zeros(45,1);
+%Here the training data is fetched randomly
+ind1= 1;
+while (ind1 <= 45)
+	x = int32(unifrnd(1,150));
+	if (any(x == randnos))
+		ind1 = ind1 - 1;
+	else
+		randnos(ind1) = x;
+		newtrain30(ind1,:) = f(x,:);
+		ind1 = ind1+1;
+	endif
+endwhile
+%Here the Test data is fetched excluding the training data
+ind1 = 1;
+for i = 1:150
+	if (any(int32(i) == randnos))
+		continue;
+	else
+		newtest30(ind1,:) = f(i,:);
+		ind1+=1;
+	endif
+endfor
+%For 50% CASE
+newtrain50 = zeros(75,5);
+newtest50 = zeros(75,5);
+randnos = zeros(75,1);
+%Here the training data is fetched randomly
+ind1= 1;
+while (ind1 <= 75)
+	x = int32(unifrnd(1,150));
+	if (any(x == randnos))
+		ind1 = ind1 - 1;
+	else
+		randnos(ind1) = x;
+		newtrain50(ind1,:) = f(x,:);
+		ind1 = ind1+1;
+	endif
+endwhile
+%Here the Test data is fetched excluding the training data
+ind1 = 1;
+for i = 1:150
+	if (any(int32(i) == randnos))
+		continue;
+	else
+		newtest50(ind1,:) = f(i,:);
+		ind1+=1;
+	endif
+endfor
+%---------------------------------------------------------------------------
+function [X, Y, t] = setMat1(test_data, training_data)
+	X = training_data(:, 1:4);
+	X = [ones(size(X, 1) , 1) X];
+	Y = [ones(size(test_data, 1), 1) test_data];
+	t = zeros(size(X, 1), 3);
+	for i = 1:size(training_data, 1)
+		t(i, int32(training_data(i, 5))) = 1;
+	endfor
+endfunction
+%---------------------------------------------------------------------------
+%Train the data sets here
+function W = train(X, t)
+	lambda = 0.1;
+	W = inverse(X'*X + lambda*eye(size(X, 2)))*X'*t;
+endfunction
+%---------------------------------------------------------------------------
+%Classify the test data sets here into classes. The max value of the rez determines the corresponding class.
+function result = Classify(test_data, W)
+	misclass = 0;
+	for i = 1 : length(test_data)
+		
+		rez = W'*test_data(i, 1:5)';
+		ans = 0;
+		if rez(1, 1) > rez(2, 1)
+			if rez(1, 1) > rez(3, 1)
+				ans = 1;
+			elseif rez(2,1) > rez(3,1) 
+				ans = 2;
+			else
+				ans = 3;
+			endif
+		else
+			if rez(2, 1) > rez(3, 1)
+				ans = 2;
+			else 
+				ans  = 3;
+			endif
+							
+		endif
+		if ans != test_data(i, 6)
+			misclass += 1;
+		endif
+	endfor
+%The misclassification error %age is calculated here.	
+	result = (misclass/length(test_data))*100
+	
+endfunction
+%Calculate the %age of classes in each cases
+function [class1,class2,class3] = calcPerc(newtrain)
+	ind = 1;
+	class1 = 0;
+	class2 = 0;
+	class3 = 0;
+	while (ind <= length(newtrain))
+		if (int32(newtrain(ind,5)) == 1)
+			class1 += 1;
+		elseif (int32(newtrain(ind,5)) == 2)
+			class2 += 1;
+		else 
+			class3 += 1;
+		endif
+		ind += 1;
+	endwhile
+	class1 = (class1/length(newtrain))*100;
+	class2 = (class2/length(newtrain))*100;
+	class3 = (class3/length(newtrain))*100;
+		
+endfunction
+%---------------------------------------------------------------------------
+disp("The %age of classes  in training data is");
+disp("In 10% case");
+[Xt, Yt,td]=setMat1( newtest10,newtrain10);
+W=train(Xt, td);
+res1 = Classify(Yt, W);
+[class1,class2,class3] = calcPerc(newtrain10);
+class1
+class2
+class3
+disp("In 30% case");
+[Xt, Yt,td]=setMat1( newtest30,newtrain30);
+W=train(Xt, td);
+res2 = Classify(Yt, W);
+[class1,class2,class3] = calcPerc(newtrain30);
+class1
+class2
+class3
+disp("In 50% case");
+[Xt, Yt,td]=setMat1( newtest50,newtrain50);
+W=train(Xt, td);
+res3 = Classify(Yt, W);
+[class1,class2,class3] = calcPerc(newtrain50);
+class1
+class2
+class3
+
+%---------------------------------------------------------------------------
