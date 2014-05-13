@@ -1,0 +1,71 @@
+{
+    "algorithms": {
+        "k_nearest_neighbors": {
+            "cross_validate": true,
+            "allowed_metrics": ["accuracy_score"],
+            "reduction": "LinearEmbedding",
+            "parameters": {
+                "p": [1,2,3,10000],
+                "n_neighbors": [2,3,5, 8]
+            },
+            "type_masks": [1]
+        },
+        "random_forest":{
+            "cross_validate": true,
+            "allowed_metrics": ["accuracy_score"],
+            "parameters": {
+                "n_estimators": [10,50,100],
+                "min_samples_split": [1,5,15],
+                "max_depth": [5,10,15]
+            },
+            "reduction": "PCA",
+            "type_masks": [1]
+        },
+        "multilayer_perceptron":{
+            "cross_validate": false,
+            "allowed_metrics": ["accuracy_score"],
+            "reduction": "PCA",
+            "parameters":{
+                "n_hidden": [100,200],
+                "lr": [0.1]
+            },
+            "type_masks": [1]
+        },
+        "ada_boost":{
+           "cross_validate": true,
+           "allowed_metrics": ["accuracy_score"],
+           "parameters": {
+             "n_estimators": [5,10,50],
+             "learning_rate": [0.05,0.1,0.2]
+            },
+            "type_masks": [1]
+         },
+        "decision_tree":{
+            "cross_validate": true,
+            "allowed_metrics": ["accuracy_score"],
+            "reduction": "PCA",
+            "parameters": {
+                "min_samples_split": [1,5,15],
+                "max_depth": [5,10,15]
+            },
+            "type_masks": [1]
+        },
+        "support_vector_machine": {
+            "allowed_metrics": ["accuracy_score"],
+            "reduction": "PCA",
+            "cross_validate": true,
+            "parameters": {
+                "C": [0.001, 1, 20, 1000],
+                "kernel": ["rbf", "poly", "sigmoid", "linear"],
+            },
+            "type_masks": [1, 5]
+        }
+    },
+    "datasets": ["higgs", "iris", "ocr_train", "ocr_test", "breast_cancer", "digits"],
+    "cv_method": "KFold",
+    "cv_metric": "accuracy",
+    "cv_params": [3],
+    "plot_dir": "../plots",
+    "plot_data": true,
+    "training_size": [0.10, 0.30, 0.50]
+}
